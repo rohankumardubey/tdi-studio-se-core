@@ -112,7 +112,7 @@ public class ExcelTool {
     }
 
     public void prepareStream() {
-        wb = new SXSSFWorkbook(rowAccessWindowSize);
+        wb = new SXSSFWorkbook(null,rowAccessWindowSize,false,true);
         sheet = wb.createSheet(sheetName);
         if (isAbsY) {
             startX = absX;
@@ -130,11 +130,11 @@ public class ExcelTool {
                 appendActionForFile(fileName);
             } else {
                 xlsxFile.delete();
-                wb = new SXSSFWorkbook(rowAccessWindowSize);
+                wb = new SXSSFWorkbook(null,rowAccessWindowSize,false,true);
                 sheet = wb.createSheet(sheetName);
             }
         } else {
-            wb = new SXSSFWorkbook(rowAccessWindowSize);
+            wb = new SXSSFWorkbook(null,rowAccessWindowSize,false,true);
             sheet = wb.createSheet(sheetName);
         }
         if (isAbsY) {
@@ -153,11 +153,12 @@ public class ExcelTool {
                 appendActionForFile(fileName);
             } else {
                 xlsmFile.delete();
-                wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+                wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize,false,true);
+
                 sheet = wb.createSheet(sheetName);
             }
         } else {
-            wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize);
+            wb = new SXSSFWorkbook(new XSSFWorkbook(XSSFWorkbookType.XLSM), rowAccessWindowSize,false,true);
             sheet = wb.createSheet(sheetName);
         }
         if (isAbsY) {
