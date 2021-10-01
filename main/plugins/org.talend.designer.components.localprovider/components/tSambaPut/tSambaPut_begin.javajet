@@ -1,0 +1,89 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		java.util.List
+		java.util.Map
+	"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();	
+	String overwrite = ElementParameterParser.getValue(node, "__OVERWRITE__");
+	String localfile = ElementParameterParser.getValue(node, "__LOCALFILE__");
+	boolean useStream = ("true").equals(ElementParameterParser.getValue(node,"__USESTREAM__"));
+	String inStream = ElementParameterParser.getValue(node,"__STREAMNAME__");
+
+	boolean creatDir=ElementParameterParser.getValue(node, "__CREATE_DIRECTORY__").equals("true");	
+	    
+	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	final boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J2_ACTIVATE__"));//log4j2 enable
+	String cid = node.getUniqueName();
+ %>
+
+	<%@ include file="../tSambaConnection/tSambaConnection_utils.javajet"%>
+
+	String URLDirectory_<%=cid%>="smb://"+<%=host%>+"/"+<%=shareddirectory%>;
+	String URLFile_<%=cid%>="smb://"+<%=host%>+"/"+<%=shareddirectory%>+"/"+<%=remotefile%>;
+	
+		byte[] b_<%=cid%> = new byte[65535];
+		int n_<%=cid%>;
+
+		if(<%=isLog4jEnabled%>){
+			log.debug("<%=cid%> - Target File - " +URLFile_<%=cid%>);
+		}
+		jcifs.smb.SmbFile sf_<%=cid%> = new jcifs.smb.SmbFile(URLFile_<%=cid%>,cifsContext_<%=cid%>);
+		<%if(creatDir){%>
+				if (sf_<%=cid%> != null && (new jcifs.smb.SmbFile(sf_<%=cid%>.getParent(),cifsContext_<%=cid%>)).exists() == false ) {
+					if(<%=isLog4jEnabled%>){
+					log.debug("<%=cid%> - Creating Directory - " +URLFile_<%=cid%>);
+					}
+					(new jcifs.smb.SmbFile(sf_<%=cid%>.getParent(),cifsContext_<%=cid%>)).mkdirs();
+				}
+		<%}%>
+
+
+		jcifs.smb.SmbFileOutputStream smb_os_<%=cid%> = new jcifs.smb.SmbFileOutputStream(sf_<%=cid%>);	
+
+<%if(useStream){
+//determine what stream and make sure it's an input stream.
+	%>
+	boolean isInputStream_<%=cid%> = false;
+	try {
+		java.io.InputStream localfile_in_<%=cid%> = (java.io.InputStream)(Object) (<%=inStream%>);
+		isInputStream_<%=cid%> = true;
+	} catch (Exception e) {
+<%
+//do nothing.
+%>
+	}
+
+	java.io.InputStream localfile_in_<%=cid%> = null;
+	if(isInputStream_<%=cid%>) {
+		localfile_in_<%=cid%> = (java.io.InputStream) <%=inStream%>;
+	} else {
+<%
+//we assume we have  a ByteArrayStream
+%>
+		java.io.ByteArrayOutputStream bos_<%=cid%> = (java.io.ByteArrayOutputStream)(Object)<%=inStream%>;
+		localfile_in_<%=cid%> = new java.io.ByteArrayInputStream( bos_<%=cid%>.toByteArray() );
+		bos_<%=cid%>.close();
+	}
+<%} else {%>
+		java.io.InputStream localfile_in_<%=cid%> = new java.io.FileInputStream(new java.io.File(<%=localfile%>));	
+<%}%>
+		while(( n_<%=cid%> = localfile_in_<%=cid%>.read(b_<%=cid%>))>0) {			
+			smb_os_<%=cid%>.write(b_<%=cid%>,0,n_<%=cid%>);		    
+		}
+		
+		localfile_in_<%=cid%>.close();
+		smb_os_<%=cid%>.close();
+		if(<%=isLog4jEnabled%>){
+			log.info("<%=cid%> - Target File - " +URLFile_<%=cid%> + " - created.");
+		}
+
+		globalMap.put("<%=cid%>_REMOTEFILEPATH", URLFile_<%=cid%>);
+		globalMap.put("<%=cid%>_LOCALFILEPATH", <%=localfile%>);

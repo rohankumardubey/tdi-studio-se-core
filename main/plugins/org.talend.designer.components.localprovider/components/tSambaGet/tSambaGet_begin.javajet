@@ -1,0 +1,75 @@
+<%@ jet 
+	imports="
+		org.talend.core.model.process.INode 
+		org.talend.core.model.process.ElementParameterParser
+		org.talend.core.model.metadata.IMetadataTable
+		org.talend.designer.codegen.config.CodeGeneratorArgument
+		java.util.List
+		java.util.Map
+	"
+%>
+
+<%
+	CodeGeneratorArgument codeGenArgument = (CodeGeneratorArgument) argument;
+	INode node = (INode)codeGenArgument.getArgument();	
+	boolean creatDir=ElementParameterParser.getValue(node, "__CREATE_DIRECTORY__").equals("true");	
+	String localfile = ElementParameterParser.getValue(node, "__LOCALFILE__");
+
+	boolean bUseCache = "true".equals(ElementParameterParser.getValue(node, "__USE_CACHE__"));
+    
+	final boolean isLog4jEnabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J_ACTIVATE__"));
+	final boolean isLog4j2Enabled = ("true").equals(ElementParameterParser.getValue(node.getProcess(), "__LOG4J2_ACTIVATE__"));//log4j2 enable
+
+	String cid = node.getUniqueName();
+%>
+	
+	<%@ include file="../tSambaConnection/tSambaConnection_utils.javajet"%>
+	
+	String URLFile_<%=cid%>="smb://"+<%=host%>+"/"+<%=shareddirectory%>+"/"+<%=remotefile%>;
+
+	<%if (!bUseCache) {%>
+
+		byte[] b_<%=cid%> = new byte[65535];
+		int n_<%=cid%>;
+
+		//Local file definition
+		java.io.File localfile_<%=cid%> = new java.io.File(<%=localfile%>);
+		java.io.File localdirectory_<%=cid%>= localfile_<%=cid%>.getParentFile();
+		<%if(creatDir){%>
+
+				if (localdirectory_<%=cid%> != null && !localdirectory_<%=cid%>.exists()) {
+					localdirectory_<%=cid%>.mkdirs();
+				}
+		<%}%>
+	<%} else {%>
+		java.io.InputStream retIS_<%=cid%> = null;
+	<% } %>
+
+		jcifs.smb.SmbFile sf_<%=cid%> = new jcifs.smb.SmbFile(URLFile_<%=cid%>,cifsContext_<%=cid%>);
+		if(sf_<%=cid%> != null && sf_<%=cid%>.exists()) {
+	<%if (bUseCache) {%>
+			retIS_<%=cid%> = new jcifs.smb.SmbFileInputStream(sf_<%=cid%>);
+	<% } else { %>
+			jcifs.smb.SmbFileInputStream smb_in_<%=cid%> = new jcifs.smb.SmbFileInputStream(sf_<%=cid%>);	
+			java.io.FileOutputStream localfile_os_<%=cid%>= new java.io.FileOutputStream(localfile_<%=cid%>);
+
+			while(( n_<%=cid%> = smb_in_<%=cid%>.read(b_<%=cid%>))>0) {			
+				localfile_os_<%=cid%>.write(b_<%=cid%>,0,n_<%=cid%>);		    
+			}
+		
+			localfile_os_<%=cid%>.close();
+			smb_in_<%=cid%>.close();
+	<% } %>
+		} else {
+			throw new java.io.FileNotFoundException("<%=cid%> - Remote file doesn't exists! - " + URLFile_<%=cid%>);
+		}
+	<%if (bUseCache) {%>
+		java.io.InputStream stream<%=cid%> = (java.io.InputStream)globalMap.get("<%=cid%>_INPUT_STREAM");
+		if(stream<%=cid%>!=null){
+			stream<%=cid%>.close();
+		}
+		globalMap.put("<%=cid%>_INPUT_STREAM", retIS_<%=cid%>);
+	<%} else {%>
+		globalMap.put("<%=cid%>_LOCALFILEPATH", <%=localfile%>);
+	<%}%>
+		globalMap.put("<%=cid%>_REMOTEFILEPATH", URLFile_<%=cid%>);
