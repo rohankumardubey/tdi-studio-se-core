@@ -28,7 +28,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbook;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTWorkbookPr;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.WorkbookDocument
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.WorkbookDocument;
 
 import java.io.File;
 import java.io.InputStream;
@@ -167,7 +167,6 @@ public class ExcelReader implements Callable {
                 }
             }
             XSSFReader r = new XSSFReader(pkg);
-            InputStream workbookXml = r.getWorkbookData();
             InputStream workbookXml = r.getWorkbookData();
             WorkbookDocument doc = WorkbookDocument.Factory.parse(workbookXml);
             CTWorkbook wb = doc.getWorkbook();
