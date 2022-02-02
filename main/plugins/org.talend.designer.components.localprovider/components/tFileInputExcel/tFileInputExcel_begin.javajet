@@ -54,7 +54,7 @@ if ((metadatas!=null)&&(metadatas.size()>0)) {
 
 		String mode = ElementParameterParser.getValue(node,"__GENERATION_MODE__");
 		final boolean eventMode = "EVENT_MODE".equals(mode);
-
+        final boolean isDate1904 = eventMode && ("true").equals(ElementParameterParser.getValue(node,"__IS_DATE_1904__"));
         if (version07) {
             String passwordFieldName = "__PASSWORD__";
         %>
@@ -1425,7 +1425,7 @@ globalMap.put("<%=cid%>_ERROR_MESSAGE",e.getMessage());
 %>
 				try{
 					<%=firstConnName %>.<%=column.getLabel() %> = ParserUtils.parseTo_Date(temp_row_<%=cid %>[columnIndex_<%=cid%>]<%=(isTrimAll || (!trimSelects.isEmpty() && ("true").equals(trimSelects.get(i).get("TRIM"))))?".trim()":"" %>, <%= patternValue %>);
-					if(true){ //TODO add checkbox to determine Date format 1900 or 1904
+					if(<%=isDate1904 %>){
 						<%=firstConnName %>.<%=column.getLabel() %> = FormatterUtils.convert_Date1904(<%=firstConnName %>.<%=column.getLabel() %>);
 					}
 				}catch(java.lang.Exception e){
