@@ -18,6 +18,7 @@ package org.talend.sdk.component.studio;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
+import static org.talend.sdk.component.studio.model.ReturnVariables.FLOW;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_TOTAL_RECORD_COUNT;
 
@@ -355,6 +356,25 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
                 returnNode.setDisplayName(description);
                 returnNode.setName(key);
                 returnNode.setAvailability(AFTER);
+                returnVariables.add(returnNode);
+            }
+        }
+        
+        if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_FLOW_VARIABLE)) {
+            String flowVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_FLOW_VARIABLE, "");
+            for (String string : flowVariableMetaValue.split(TaCoKitConst.AFTER_VARIABLE_LINE_DELIMITER)) {
+                String[] split = string.split(TaCoKitConst.AFTER_VARIABLE_VALUE_DELIMITER);
+                String key = split[0];
+                String type = split[1];
+                // if description is empty we use as description the key value
+                String description = split.length < 3 || split[2].isEmpty() ? split[0] : split[2];
+
+                NodeReturn returnNode = new NodeReturn();
+                String javaType = JavaTypesManager.getJavaTypeFromCanonicalName(type).getId();
+                returnNode.setType(javaType);
+                returnNode.setDisplayName(description);
+                returnNode.setName(key);
+                returnNode.setAvailability(FLOW);
                 returnVariables.add(returnNode);
             }
         }

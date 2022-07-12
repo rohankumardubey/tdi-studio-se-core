@@ -104,6 +104,8 @@ public class TaCoKitConst {
     public static final String CREATE_CONNECTION_ATCION_NAME = "create_connection";
 
     public static final String META_KEY_AFTER_VARIABLE = "variables::after::value"; //$NON-NLS-1$
+    
+    public static final String META_KEY_FLOW_VARIABLE = "variables::flow::value";
 
     public static final String AFTER_VARIABLE_VALUE_DELIMITER = "\\\\:";
 

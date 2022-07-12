@@ -30,6 +30,8 @@ public final class ReturnVariables {
      * after current subjob
      */
     public static final String AFTER = "AFTER";
+    
+    public static final String FLOW = "FLOW";
 
     private ReturnVariables() {
         new AssertionError();
