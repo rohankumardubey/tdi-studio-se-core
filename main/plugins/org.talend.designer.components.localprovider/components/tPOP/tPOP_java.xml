@@ -205,6 +205,7 @@
       NAME="USE_TWO_LINE_TOKEN"
       FIELD="CHECK"
       REQUIRED="true"
+      SHOW_IF="AUTH_MODE == 'OAUTH2'"
       NUM_ROW="14">
         <DEFAULT>false</DEFAULT>
     </PARAMETER>
