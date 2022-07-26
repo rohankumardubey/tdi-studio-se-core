@@ -18,7 +18,6 @@ package org.talend.sdk.component.studio;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static org.talend.sdk.component.studio.model.ReturnVariables.AFTER;
-import static org.talend.sdk.component.studio.model.ReturnVariables.FLOW;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_ERROR_MESSAGE;
 import static org.talend.sdk.component.studio.model.ReturnVariables.RETURN_TOTAL_RECORD_COUNT;
 
@@ -362,8 +361,8 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
         }
         
         if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_RETURN_VARIABLE)) {
-            String flowVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_RETURN_VARIABLE, "");
-            for (String string : flowVariableMetaValue.split(TaCoKitConst.RETURN_VARIABLE_LINE_DELIMITER)) {
+            String returnVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_RETURN_VARIABLE, "");
+            for (String string : returnVariableMetaValue.split(TaCoKitConst.RETURN_VARIABLE_LINE_DELIMITER)) {
                 String[] split = string.split(TaCoKitConst.RETURN_VARIABLE_VALUE_DELIMITER);
                 String key = split[0];
                 String type = split[1];
