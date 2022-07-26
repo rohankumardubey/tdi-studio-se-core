@@ -341,10 +341,11 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             returnVariables.add(numberLinesMessage);
         }
 
+        //TODO deprecate this
         if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_AFTER_VARIABLE)) {
             String afterVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_AFTER_VARIABLE, "");
-            for (String string : afterVariableMetaValue.split(TaCoKitConst.AFTER_VARIABLE_LINE_DELIMITER)) {
-                String[] split = string.split(TaCoKitConst.AFTER_VARIABLE_VALUE_DELIMITER);
+            for (String string : afterVariableMetaValue.split(TaCoKitConst.RETURN_VARIABLE_LINE_DELIMITER)) {
+                String[] split = string.split(TaCoKitConst.RETURN_VARIABLE_VALUE_DELIMITER);
                 String key = split[0];
                 String type = split[1];
                 // if description is empty we use as description the key value
@@ -360,21 +361,22 @@ public class ComponentModel extends AbstractBasicComponent implements IAdditiona
             }
         }
         
-        if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_FLOW_VARIABLE)) {
-            String flowVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_FLOW_VARIABLE, "");
-            for (String string : flowVariableMetaValue.split(TaCoKitConst.AFTER_VARIABLE_LINE_DELIMITER)) {
-                String[] split = string.split(TaCoKitConst.AFTER_VARIABLE_VALUE_DELIMITER);
+        if (detail.getMetadata().containsKey(TaCoKitConst.META_KEY_RETURN_VARIABLE)) {
+            String flowVariableMetaValue = detail.getMetadata().getOrDefault(TaCoKitConst.META_KEY_RETURN_VARIABLE, "");
+            for (String string : flowVariableMetaValue.split(TaCoKitConst.RETURN_VARIABLE_LINE_DELIMITER)) {
+                String[] split = string.split(TaCoKitConst.RETURN_VARIABLE_VALUE_DELIMITER);
                 String key = split[0];
                 String type = split[1];
+                String availability = split[2];
                 // if description is empty we use as description the key value
-                String description = split.length < 3 || split[2].isEmpty() ? split[0] : split[2];
+                String description = (split.length < 4 || split[3].isEmpty()) ? split[0] : split[3];
 
                 NodeReturn returnNode = new NodeReturn();
                 String javaType = JavaTypesManager.getJavaTypeFromCanonicalName(type).getId();
                 returnNode.setType(javaType);
                 returnNode.setDisplayName(description);
                 returnNode.setName(key);
-                returnNode.setAvailability(FLOW);
+                returnNode.setAvailability(availability);
                 returnVariables.add(returnNode);
             }
         }

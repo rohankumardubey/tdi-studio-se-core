@@ -31,8 +31,6 @@ public final class ReturnVariables {
      */
     public static final String AFTER = "AFTER";
     
-    public static final String FLOW = "FLOW";
-
     private ReturnVariables() {
         new AssertionError();
     }
