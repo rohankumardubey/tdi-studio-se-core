@@ -24,6 +24,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.talend.core.GlobalServiceRegister;
 import org.talend.core.model.general.ModuleNeeded;
 import org.talend.core.model.properties.ProcessItem;
+import org.talend.core.model.properties.Property;
+import org.talend.designer.maven.utils.PomIdsHelper;
 import org.talend.designer.publish.core.models.BundleModel;
 import org.talend.designer.publish.core.models.FeaturesModel;
 import org.talend.designer.runprocess.IRunProcessService;
